@@ -1,3 +1,6 @@
+// ==========================
+// Project Data
+// ==========================
 const projects = [
     {
         title: "Portfolio Website",
@@ -25,6 +28,9 @@ const projects = [
     }
 ];
 
+// ==========================
+// DOM Elements
+// ==========================
 const projectList = document.getElementById("projectList");
 const filterCategory = document.getElementById("filterCategory");
 const sortProjects = document.getElementById("sortProjects");
@@ -36,11 +42,14 @@ const contactForm = document.getElementById("contactForm");
 const formSuccess = document.getElementById("formSuccess");
 const backToTop = document.getElementById("backToTop");
 
+// ==========================
+// Project Rendering
+// ==========================
 function renderProjects(projectItems) {
     projectList.innerHTML = "";
 
     if (projectItems.length === 0) {
-        projectList.innerHTML = "<p>No projects found for the selected filter.</p>";
+        projectList.innerHTML = "<p>No projects found.</p>";
         return;
     }
 
@@ -60,20 +69,18 @@ function renderProjects(projectItems) {
 
 function getFilteredAndSortedProjects() {
     let updatedProjects = [...projects];
-    const selectedCategory = filterCategory.value;
-    const selectedSort = sortProjects.value;
 
-    if (selectedCategory !== "all") {
+    if (filterCategory.value !== "all") {
         updatedProjects = updatedProjects.filter(
-            (project) => project.category === selectedCategory
+            (p) => p.category === filterCategory.value
         );
     }
 
-    if (selectedSort === "newest") {
+    if (sortProjects.value === "newest") {
         updatedProjects.sort((a, b) => new Date(b.date) - new Date(a.date));
-    } else if (selectedSort === "oldest") {
+    } else if (sortProjects.value === "oldest") {
         updatedProjects.sort((a, b) => new Date(a.date) - new Date(b.date));
-    } else if (selectedSort === "az") {
+    } else {
         updatedProjects.sort((a, b) => a.title.localeCompare(b.title));
     }
 
@@ -88,9 +95,11 @@ sortProjects.addEventListener("change", () => {
     renderProjects(getFilteredAndSortedProjects());
 });
 
+// ==========================
+// Theme Toggle
+// ==========================
 function initializeTheme() {
     const savedTheme = localStorage.getItem("theme");
-
     if (savedTheme === "dark") {
         document.body.classList.add("dark");
     }
@@ -99,10 +108,13 @@ function initializeTheme() {
 themeToggle.addEventListener("click", () => {
     document.body.classList.toggle("dark");
 
-    const currentTheme = document.body.classList.contains("dark") ? "dark" : "light";
-    localStorage.setItem("theme", currentTheme);
+    const theme = document.body.classList.contains("dark") ? "dark" : "light";
+    localStorage.setItem("theme", theme);
 });
 
+// ==========================
+// Visit Timer
+// ==========================
 function startVisitTimer() {
     let seconds = 0;
 
@@ -112,8 +124,41 @@ function startVisitTimer() {
     }, 1000);
 }
 
+// ==========================
+// GitHub API (WITH CACHE)
+// ==========================
+
+// Display repos (separate function for reuse)
+function displayRepos(repos) {
+    githubRepos.innerHTML = "";
+
+    repos.forEach((repo) => {
+        const card = document.createElement("article");
+        card.className = "card";
+
+        card.innerHTML = `
+            <h3>${repo.name}</h3>
+            <p>${repo.description ? repo.description : "No description available."}</p>
+            <small>Language: ${repo.language ? repo.language : "Not specified"}</small>
+            <a href="${repo.html_url}" target="_blank">View Repository</a>
+        `;
+
+        githubRepos.appendChild(card);
+    });
+}
+
+// Fetch repos with localStorage caching
 async function fetchGitHubRepos() {
     const username = "Reham-ms";
+
+    // Check cache first
+    const cached = localStorage.getItem("githubRepos");
+
+    if (cached) {
+        displayRepos(JSON.parse(cached));
+        apiMessage.textContent = "";
+        return;
+    }
 
     try {
         apiMessage.textContent = "Loading repositories...";
@@ -124,40 +169,33 @@ async function fetchGitHubRepos() {
         );
 
         if (!response.ok) {
-            throw new Error(`Failed to fetch GitHub repositories. Status: ${response.status}`);
+            throw new Error(`Status: ${response.status}`);
         }
 
         const repos = await response.json();
 
         if (repos.length === 0) {
-            apiMessage.textContent = "No public repositories found.";
+            apiMessage.textContent = "No repositories found.";
             return;
         }
 
+        // Save to cache
+        localStorage.setItem("githubRepos", JSON.stringify(repos));
+
+        displayRepos(repos);
         apiMessage.textContent = "";
 
-        repos.forEach((repo) => {
-            const card = document.createElement("article");
-            card.className = "card";
-
-            card.innerHTML = `
-                <h3>${repo.name}</h3>
-                <p>${repo.description ? repo.description : "No description available."}</p>
-                <small>Language: ${repo.language ? repo.language : "Not specified"}</small>
-                <a href="${repo.html_url}" target="_blank" rel="noopener noreferrer">View Repository</a>
-            `;
-
-            githubRepos.appendChild(card);
-        });
     } catch (error) {
-        apiMessage.textContent = "Unable to load GitHub repositories at the moment. Please try again later.";
-        console.error("GitHub API error:", error);
+        apiMessage.textContent = "GitHub API limit reached. Please try again later.";
+        console.error("GitHub error:", error);
     }
 }
 
+// ==========================
+// Contact Form Validation
+// ==========================
 function validateEmail(email) {
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailPattern.test(email);
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
 function clearErrors() {
@@ -175,35 +213,32 @@ contactForm.addEventListener("submit", (event) => {
     const email = document.getElementById("email").value.trim();
     const message = document.getElementById("message").value.trim();
 
-    let isValid = true;
+    let valid = true;
 
-    if (name === "") {
+    if (!name) {
         document.getElementById("nameError").textContent = "Name is required.";
-        isValid = false;
+        valid = false;
     }
 
-    if (email === "") {
-        document.getElementById("emailError").textContent = "Email is required.";
-        isValid = false;
-    } else if (!validateEmail(email)) {
-        document.getElementById("emailError").textContent = "Please enter a valid email address.";
-        isValid = false;
+    if (!email || !validateEmail(email)) {
+        document.getElementById("emailError").textContent = "Valid email required.";
+        valid = false;
     }
 
-    if (message === "") {
-        document.getElementById("messageError").textContent = "Message is required.";
-        isValid = false;
-    } else if (message.length < 10) {
-        document.getElementById("messageError").textContent = "Message must be at least 10 characters long.";
-        isValid = false;
+    if (!message || message.length < 10) {
+        document.getElementById("messageError").textContent = "Message must be at least 10 characters.";
+        valid = false;
     }
 
-    if (isValid) {
-        formSuccess.textContent = "Form submitted successfully! Validation passed.";
+    if (valid) {
+        formSuccess.textContent = "Message sent successfully!";
         contactForm.reset();
     }
 });
 
+// ==========================
+// Back To Top Button
+// ==========================
 window.addEventListener("scroll", () => {
     if (window.scrollY > 300) {
         backToTop.classList.add("show");
@@ -219,6 +254,86 @@ backToTop.addEventListener("click", () => {
     });
 });
 
+// ==========================
+// GitHub API WITH FALLBACK
+// ==========================
+
+// fallback data (used if API fails)
+const fallbackRepos = [
+    {
+        name: "Portfolio Website",
+        description: "My personal portfolio project.",
+        language: "HTML/CSS/JS",
+        html_url: "#"
+    },
+    {
+        name: "JavaScript Quiz App",
+        description: "Interactive quiz application.",
+        language: "JavaScript",
+        html_url: "#"
+    },
+    {
+        name: "Task Manager",
+        description: "Simple task management app.",
+        language: "JavaScript",
+        html_url: "#"
+    }
+];
+
+// display function
+function displayRepos(repos) {
+    githubRepos.innerHTML = "";
+
+    repos.forEach((repo) => {
+        const card = document.createElement("article");
+        card.className = "card";
+
+        card.innerHTML = `
+            <h3>${repo.name}</h3>
+            <p>${repo.description ? repo.description : "No description available."}</p>
+            <small>Language: ${repo.language ? repo.language : "Not specified"}</small>
+            <a href="${repo.html_url}" target="_blank">View Repository</a>
+        `;
+
+        githubRepos.appendChild(card);
+    });
+}
+
+async function fetchGitHubRepos() {
+    const username = "Reham-ms";
+
+    try {
+        apiMessage.textContent = "Loading repositories...";
+        githubRepos.innerHTML = "";
+
+        const response = await fetch(
+            `https://api.github.com/users/${username}/repos?sort=updated&per_page=6`
+        );
+
+        if (!response.ok) {
+            throw new Error(`Status: ${response.status}`);
+        }
+
+        const repos = await response.json();
+
+        // save to localStorage
+        localStorage.setItem("githubRepos", JSON.stringify(repos));
+
+        displayRepos(repos);
+        apiMessage.textContent = "";
+
+    } catch (error) {
+        console.warn("Using fallback data due to API error:", error);
+
+        // use fallback instead
+        displayRepos(fallbackRepos);
+
+        apiMessage.textContent = "Showing sample projects (GitHub API unavailable).";
+    }
+}
+// ==========================
+// Initialize App
+// ==========================
 function init() {
     initializeTheme();
     renderProjects(projects);

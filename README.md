@@ -45,6 +45,8 @@ The application includes dynamic content, API integration, interactive features,
 ├── docs/
 │   ├── ai-usage-report.md
 │   └── technical-documentation.md
+├── presentation/
+│   └── vedio/
 ├── README.md
 └── .gitignore
 ```

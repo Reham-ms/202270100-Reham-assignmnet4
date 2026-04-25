@@ -192,10 +192,17 @@ Several techniques were applied to improve performance:
 
 ## 6. Error Handling
 
-### API Error Handling:
 
-* Displays a message if GitHub API fails
-* Prevents application from breaking
+### GitHub API Rate Limiting
+
+During development, the GitHub API rate limit was exceeded due to multiple requests.
+
+To handle this:
+- Error messages were displayed to the user
+- The application prevents crashes when the API fails
+- Future improvement: caching API responses using localStorage
+
+This demonstrates handling real-world API limitations.
 
 ### Form Validation Errors:
 
@@ -240,8 +247,25 @@ Possible enhancements include:
 
 ---
 
-## 10. Conclusion
+
+## 10. Innovation
+
+The project includes several creative features to enhance user experience:
+
+- **Back-to-Top Button**
+  Allows users to quickly return to the top of the page with smooth scrolling.
+
+- **Theme Toggle (Dark/Light Mode)**
+  Users can switch themes, and their preference is saved using localStorage.
+
+- **Visit Timer**
+  Displays how long a user has stayed on the website in real time.
+
+These features improve usability and demonstrate creative problem-solving beyond basic requirements.
+
+## 11. Conclusion
 
 This project demonstrates the use of advanced JavaScript concepts, API integration, state management, and clean coding practices. It reflects an understanding of how to build interactive, user-friendly web applications while maintaining performance and code quality.
 
 The project serves as a strong foundation for developing more complex and professional web applications in the future.
+

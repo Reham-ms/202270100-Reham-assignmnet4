@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reham Alsubhy | Personal Portfolio</title>
+    <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+<header class="header">
+    <nav class="navbar container">
+        <h1 class="logo">Reham Portfolio</h1>
+        <div class="nav-actions">
+            <button id="themeToggle" class="btn secondary">Toggle Theme</button>
+        </div>
+    </nav>
+</header>
+
+<main>
+    <section class="hero container">
+        <div class="hero-text">
+            <h2>Hello, I'm <span class="highlight">Reham Alsubhy</span></h2>
+            <p>A web development student building modern, responsive, and interactive web applications.</p>
+
+            <div class="timer-box">
+                <p>Time spent on this site:</p>
+                <span id="visitTimer">0s</span>
+            </div>
+        </div>
+
+        <div class="hero-image">
+            <img src="assets/images/image1.png" alt="Web Development Illustration">
+        </div>
+    </section>
+
+    <section class="about container section">
+        <h2>About Me</h2>
+        <p>
+            I am a software student interested in web development. I enjoy building clean,
+            responsive, and user-friendly applications. This portfolio demonstrates
+            JavaScript features, API integration, state management, and performance optimization.
+        </p>
+    </section>
+
+    <section class="skills container section">
+        <h2>Skills</h2>
+        <div class="skills-list">
+            <span>HTML</span>
+            <span>CSS</span>
+            <span>JavaScript</span>
+            <span>Responsive Design</span>
+            <span>Git & GitHub</span>
+        </div>
+    </section>
+
+    <section class="projects container section">
+        <h2>Portfolio Projects</h2>
+
+        <div class="controls">
+            <label>
+                Filter:
+                <select id="filterCategory">
+                    <option value="all">All</option>
+                    <option value="web">Web</option>
+                    <option value="ui">UI</option>
+                    <option value="javascript">JavaScript</option>
+                </select>
+            </label>
+
+            <label>
+                Sort:
+                <select id="sortProjects">
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="az">A-Z</option>
+                </select>
+            </label>
+        </div>
+
+        <div id="projectList" class="project-grid"></div>
+    </section>
+
+    <section class="github container section">
+        <h2>My GitHub Repositories</h2>
+        <p class="section-note">Live data fetched from the GitHub API.</p>
+        <div id="githubRepos" class="repo-grid"></div>
+        <p id="apiMessage" class="message"></p>
+    </section>
+
+    <section class="contact container section">
+        <h2>Contact Me</h2>
+        <form id="contactForm" novalidate>
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input id="name" name="name" type="text" />
+                <small class="error" id="nameError"></small>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" />
+                <small class="error" id="emailError"></small>
+            </div>
+
+            <div class="form-group">
+                <label for="message">Message</label>
+                <textarea id="message" name="message" rows="5"></textarea>
+                <small class="error" id="messageError"></small>
+            </div>
+
+            <button type="submit" class="btn">Send Message</button>
+            <p id="formSuccess" class="success-message"></p>
+        </form>
+    </section>
+</main>
+
+<footer class="footer">
+    <p>&copy; 2026 Reham Alsubhy. Built for Assignment 4.</p>
+</footer>
+
+<button id="backToTop" class="back-to-top">↑</button>
+
+<script src="js/script.js"></script>
+</body>
+</html>
